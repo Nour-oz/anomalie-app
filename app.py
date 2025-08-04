@@ -18,7 +18,7 @@ uploaded_file = st.file_uploader("Déposez votre fichier Excel ici", type=["xlsx
 # === Traitement ===
 if uploaded_file and type_analyse != "Sélectionnez":
     try:
-        df = pd.read_excel(uploaded_file)
+        df = pd.read_excel(uploaded_file, header=1)
 
         # === Aperçu du fichier ===
         st.subheader("Aperçu du fichier importé")
