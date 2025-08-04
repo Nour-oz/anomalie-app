@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-from app.anomalies_logic.suivi_encours import detect_anomalies_suivi_encours
+# from app.anomalies_logic.suivi_encours import detect_anomalies_suivi_encours
+from anomalies_logic.suivi_encours import detect_anomalies_suivi_encours
 
 st.title("Détection d'anomalies dans les fichiers Excel")
 
