@@ -1,44 +1,40 @@
 import streamlit as st
 import pandas as pd
+from app.anomalies_logic.suivi_encours import detect_anomalies_suivi_encours
 
-# === Import des fonctions d'anomalies ===
-from anomalies_logic.suivi_encours import detect_anomalies_suivi_encours
-# from anomalies_logic.effectif_rh import detect_anomalies_effectif_rh
-# from anomalies_logic.commandes import detect_anomalies_commandes
-
-# === Titre ===
 st.title("Détection d'anomalies dans les fichiers Excel")
 
-# === Choix du type d'analyse ===
-type_analyse = st.selectbox("Choisissez un type d’analyse :", ["Sélectionnez", "Suivi des encours", "Effectif RH", "Commandes"])
-
-# === Upload de fichier ===
+type_analyse = st.selectbox("Choisissez un type d’analyse :", ["Sélectionnez", "Suivi des encours"])
 uploaded_file = st.file_uploader("Déposez votre fichier Excel ici", type=["xlsx", "xls"])
 
-# === Traitement ===
-if uploaded_file and type_analyse != "Sélectionnez":
+if uploaded_file and type_analyse == "Suivi des encours":
     try:
-        df = pd.read_excel(uploaded_file, header=1)
+        df = pd.read_excel(uploaded_file, sheet_name="DATA BASE", header=1)
 
-        # === Aperçu du fichier ===
         st.subheader("Aperçu du fichier importé")
-        st.dataframe(df.head())
+        st.write(df.head())
 
-        # === Détection des anomalies selon le type choisi ===
-        if type_analyse == "Suivi des encours":
-            st.subheader("Anomalies détectées : Suivi des encours")
-            detect_anomalies_suivi_encours(df)
+        anomalies = detect_anomalies_suivi_encours(df)
 
-        # elif type_analyse == "Effectif RH":
-        #     st.subheader("Anomalies détectées : Effectif RH")
-        #     detect_anomalies_effectif_rh(df)
-
-        # elif type_analyse == "Commandes":
-        #     st.subheader("Anomalies détectées : Commandes")
-        #     detect_anomalies_commandes(df)
+        st.subheader("📌 Anomalies détectées : Suivi des encours")
+        if not anomalies.empty:
+            st.write(f"Nombre total : {len(anomalies)}")
+            st.dataframe(anomalies)
+        else:
+            st.success("✅ Aucune anomalie détectée.")
 
     except Exception as e:
-        st.error(f"❌ Erreur lors de la lecture du fichier : {e}")
-
+        st.error(f"Erreur lors de la lecture ou de l'analyse : {e}")
 else:
-    st.info("📎 Veuillez choisir un type d’analyse et importer un fichier Excel.")
+    st.info("Veuillez choisir un type et importer un fichier.")
+
+if type_analyse == "Suivi des encours":
+    df = pd.read_excel(uploaded_file, sheet_name="DATA BASE", header=1)
+    anomalies = detect_anomalies_suivi_encours(df)
+
+    if not anomalies.empty:
+        st.subheader("📌 Anomalies détectées")
+        st.write(f"Total : {len(anomalies)} anomalies")
+        st.dataframe(anomalies)
+    else:
+        st.success("✅ Aucune anomalie détectée.")
