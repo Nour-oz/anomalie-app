@@ -27,14 +27,3 @@ if uploaded_file and type_analyse == "Suivi des encours":
         st.error(f"Erreur lors de la lecture ou de l'analyse : {e}")
 else:
     st.info("Veuillez choisir un type et importer un fichier.")
-
-if type_analyse == "Suivi des encours":
-    df = pd.read_excel(uploaded_file, sheet_name="DATA BASE", header=1)
-    anomalies = detect_anomalies_suivi_encours(df)
-
-    if not anomalies.empty:
-        st.subheader("📌 Anomalies détectées")
-        st.write(f"Total : {len(anomalies)} anomalies")
-        st.dataframe(anomalies)
-    else:
-        st.success("✅ Aucune anomalie détectée.")
